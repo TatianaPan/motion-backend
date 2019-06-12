@@ -1,0 +1,8 @@
+name: django_motion
+dependencies:
+  - python=3.6
+  - psycopg2
+  - pip:
+      - Django==2.2.2
+      - flake8
+      - djangorestframework

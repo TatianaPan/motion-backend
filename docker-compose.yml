@@ -1,0 +1,23 @@
+version: "3"
+services:
+  backend:
+    image: motion_django:latest
+    command: "/usr/sbin/sshd -D"
+    ports:
+      - "8000:8000"
+      - "2222:22"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/backend
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - dev.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres:
