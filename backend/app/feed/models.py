@@ -22,6 +22,7 @@ class Post(models.Model):
         default='Default post content'
     )
     created = models.DateField(
+        verbose_name='created',
         auto_now_add=True,
         editable=False,
         blank=True
@@ -36,3 +37,17 @@ class Post(models.Model):
     def __str__(self):
         return self.content
 
+
+class Like(models.Model):
+    post = models.ForeignKey(
+        verbose_name='post',
+        to=Post,
+        on_delete=models.CASCADE,
+        related_name='likes'
+    )
+    user = models.ForeignKey(
+        verbose_name='user',
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='likes'
+    )
