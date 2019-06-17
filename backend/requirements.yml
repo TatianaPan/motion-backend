@@ -5,4 +5,6 @@ dependencies:
   - pip:
       - Django==2.2.2
       - flake8
-      - djangorestframework
+      - djangorestframework==3.9.4
+      - djangorestframework_simplejwt==4.3.0
+      - django-filter==2.1.0
