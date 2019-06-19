@@ -8,3 +8,4 @@ dependencies:
       - djangorestframework==3.9.4
       - djangorestframework_simplejwt==4.3.0
       - django-filter==2.1.0
+      - drf-writable-nested==0.5.1
