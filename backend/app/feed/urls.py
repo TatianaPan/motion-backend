@@ -9,9 +9,10 @@ urlpatterns = [
     path('posts/new-post/', CreatePost.as_view(), name='create-new-post'),
     path('<int:user_id>/', GetAllPostsOfUser.as_view()),
     path('posts/likes/', GetLikedPosts.as_view()),
-    path('posts/like/<int:post_id>/', LikePost.as_view()),
+    path('posts/like/<int:post_id>/', CreateDeleteLike.as_view()),
     path('sr', SearchPosts.as_view()),
-    path('posts/like/<int:post_id>/', UnlikePost.as_view()),
-    path('posts/share-post/<int:post_id>/', ShareAPost.as_view())
+    path('posts/like/<int:post_id>/', CreateDeleteLike.as_view()),
+    path('posts/share-post/<int:post_id>/', ShareAPost.as_view()),
+    path('followees/', GetFollowedPosts.as_view())
 
 ]
