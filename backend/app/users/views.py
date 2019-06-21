@@ -11,8 +11,8 @@ from rest_framework import generics, filters, status
 from django.contrib.auth.hashers import make_password
 
 from app.users.models import UserProfile, Follower, Friend
-from feed.permissions import IsOwnerOrReadOnly
-from users.serializers import *
+from app.feed.permissions import IsOwnerOrReadOnly
+from app.users.serializers import *
 from django.utils.crypto import get_random_string
 
 User = get_user_model()
