@@ -21,9 +21,9 @@ services:
       - postgres
     env_file:
       - prod.env
-#    volumes:
+    volumes:
 #      - ./backend:/backend
-#      - static-files:/static-files/
+      - static-files:/static-files/
 
   postgres:
     image: postgres:latest
