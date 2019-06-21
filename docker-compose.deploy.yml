@@ -8,8 +8,6 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - static-files:/static-files/
-    networks:
-      - backend-network
 
   backend:
     image: registry.gitlab.propulsion-home.ch/tatiana-propulsion/week5_django/day1/motion_with_django:latest
@@ -33,10 +31,9 @@ services:
 #      - "5432:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
+
+
 volumes:
   postgres:
   static-files:
   media-files:
-
-networks:
-  backend-network:
