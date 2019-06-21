@@ -31,6 +31,12 @@ class Post(models.Model):
         on_delete=models.CASCADE,
         related_name='posts'
     )
+    photo = models.ImageField(
+        upload_to='posts',
+        max_length=100,
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return self.content

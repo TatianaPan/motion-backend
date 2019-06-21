@@ -3,9 +3,11 @@ dependencies:
   - python=3.6
   - psycopg2
   - pip:
+      - gunicorn
       - Django==2.2.2
       - flake8
       - djangorestframework==3.9.4
       - djangorestframework_simplejwt==4.3.0
       - django-filter==2.1.0
       - drf-writable-nested==0.5.1
+      - Pillow==6.0.0

@@ -81,6 +81,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class RegistrationValidationSerializer(serializers.ModelSerializer):
+    #profile = UserProfileSerializer()
+
     class Meta:
-        model = UserProfile
-        fields = ['validation']
+        model = User
+        fields = ['username', 'password', 'email']

@@ -8,6 +8,7 @@ from rest_framework.generics import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import generics, filters, status
+from django.contrib.auth.hashers import make_password
 
 from app.users.models import UserProfile, Follower, Friend
 from feed.permissions import IsOwnerOrReadOnly
@@ -63,6 +64,7 @@ class GetUserProfile(RetrieveAPIView):
 class FollowAUser(CreateAPIView):
     """
     POST: follow a user
+    Send an email to the user if they get followed by someone
     """
 
     queryset = Follower.objects.all()
@@ -181,6 +183,7 @@ class GetUpdateProfile(RetrieveUpdateAPIView):
 class SendFriendRequest(CreateAPIView):
     """
     POST: Send friend request to another user
+    Send an email to the user if they get a friend request
     """
     queryset = Friend.objects.all()
     serializer_class = FriendSerializer
@@ -190,6 +193,13 @@ class SendFriendRequest(CreateAPIView):
         receiver = get_object_or_404(User, id=kwargs.get('user_id'))
         friend_request = Friend(requester=requester, receiver=receiver, status='pending')
         friend_request.save()
+        send_mail(
+            'Subject here',
+            f'You got a new friend request from {requester}',
+            'students@propulsionacademy.com',
+            [receiver.email],
+            fail_silently=False,
+        )
         return Response(status=status.HTTP_201_CREATED)
 
 
@@ -224,11 +234,26 @@ class GetPendingRequests(ListAPIView):
 class AcceptFriendRequest(UpdateAPIView):
     """
      PATCH: Accept an open friend request
+     Send an email if a friend request gets accepted
     """
     # permission_classes = (IsAuthenticated & IsOwnerOrReadOnly,)
     queryset = Friend.objects.all()
     serializer_class = FriendSerializer
     lookup_url_kwarg = 'request_id'
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        receiver = request.user
+        requester = get_object_or_404(Friend, id=kwargs.get('request_id'))
+        user = get_object_or_404(User, requested=requester)
+        send_mail(
+            'Subject here',
+            f'Your friend request has been accepted by {receiver}',
+            'students@propulsionacademy.com',
+            [user.email],
+            fail_silently=False,
+        )
+        return self.update(request, *args, **kwargs)
 
 
 # /api/users/friendrequests/reject/<int:request_id>/
@@ -278,21 +303,22 @@ class RegistrationView(GenericAPIView):
     permission_classes = []
     serializer_class = RegistrationSerializer
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        new_user = serializer.save()
+        user_email = request.data['email']
         validation_code = get_random_string(length=32)
-        user_profile = UserProfile(user=new_user, validation=validation_code)
-        user_profile.save()
+        new_user = User.objects.create(password=validation_code, email=user_email)
+        new_user.save()
         send_mail(
-            'Subject here',
+            'Registration at Propulsion',
             f'Your validation code is: {validation_code}',
             'students@propulsionacademy.com',
             [new_user.email],
             fail_silently=False,
         )
-        return Response(self.get_serializer(new_user).data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # return Response(self.get_serializer(new_user).data)
 
 
 # /api/registration/validation/
@@ -303,23 +329,55 @@ class RegistrationValidationView(GenericAPIView):
     permission_classes = []
     serializer_class = RegistrationValidationSerializer
 
-    def post(self, request):
+    def patch(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = self.request.user
-        try:
-            user_email = User.objects.get(email=self.request.data)
 
+        username = request.data['username']
+        validation_code = request.data['code']
+        email = request.data['email']
+        password = request.data['password']
 
-            #user = User.objects.get(id=post_dict['user'])
-        except User.DoesNotExist:
-            return Response('User with this email does not exist', status=400)
+        new_user = User.objects.get(email=email)
+
+        if new_user.password == validation_code:
+            new_user.username = username
+            new_user.password = make_password(password)
+            new_user.save()
+        else:
+            return Response('Incorrect validation code', status=400)
+
+        return Response('New user has been successfully created', status=201)
+
+        # try:
+        #     new_user = get_object_or_404(User, email=request.data)
+        #     if new_user.validation == request.data.validation:
+        #         pass
+        #     validation = get_object_or_404(UserProfile, validation=request.data)
+        # except User.DoesNotExist:
+        #     return Response('User with this email or validation code does not exist', status=400)
+        #
+        # user = User(email=email, username=username, password=password)
+        # user.save()
+        # #
+        # if email == User.objects.get(email=request.data) and validation == UserProfile.objects.get(validation=validation):
+        #     user = serializer.save(username=username, password=password)
+        #
+        # else:
+        #     return Response('User with this email or validation code does not exist', status=400)
+
+        # email = get_object_or_404(User, email=request.data)
+        # validation = get_object_or_404(UserProfile, validation=request.data)
+        # user = serializer.save(
+        #     serializer.validated_data,
+        # )
+
+    # try:
+        #     email = User.objects.get(email=self.request.data)
+        #     user = User.objects.get(id=post_dict['user'])
+        # except User.DoesNotExist:
+        #     return Response('User with this email or validation code does not exist', status=400)
 
         # try:
         #     validation_code = UserProfile.objects.get(user__id__)
-        user = serializer.save(
-            serializer.validated_data,
-        )
-        return Response(self.get_serializer(user).data)
-
 

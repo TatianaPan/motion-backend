@@ -73,3 +73,6 @@ class Friend(models.Model):
         on_delete=models.CASCADE,
         related_name='requested'
     )
+
+    def __str__(self):
+        return self.requester.username

@@ -1,3 +1,5 @@
+from django.core.mail import send_mail
+from django.db.models import Q
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
@@ -16,7 +18,7 @@ from rest_framework.views import APIView
 from app.feed.models import Post, Like
 from app.feed.serializers import PostSerializer, PostForPostingSerializer, LikeSerializer, LikeForPostSerializer
 from app.feed.permissions import IsOwnerOrReadOnly
-from app.users.models import Follower
+from app.users.models import Follower, Friend
 
 User = get_user_model()
 
@@ -43,6 +45,7 @@ class GetAllPostsOfUser(ListAPIView):
 class CreatePost(CreateAPIView):
     """
     POST: logged-in user or admin can make a new post by sending post data
+    all friends will get email that user made a new post
     """
     permission_classes = (IsAuthenticated & IsOwnerOrReadOnly | IsAuthenticated & IsAdminUser,)
     queryset = Post.objects.all()
@@ -50,6 +53,17 @@ class CreatePost(CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+        friends = User.objects.filter(Q(received__status='accepted') | Q(requested__status='accepted'),
+                                      Q(received__requester__id=self.request.user.id) | Q(requested__receiver__id=self.request.user.id))
+        for friend in friends:
+            send_mail(
+                'Subject here',
+                f'Your friend {self.request.user} made a new post',
+                'students@propulsionacademy.com',
+                [friend.email],
+                fail_silently=False,
+            )
 
 
 class GetUpdateDeleteSpecificPost(RetrieveUpdateDestroyAPIView):
@@ -109,57 +123,6 @@ class CreateDeleteLike(APIView):
         user = request.user.id
         Like.objects.get(post=post, user=user).delete()
         return Response("delete successful")
-
-# class LikePost(CreateAPIView):
-#     """
-#     POST: like a post
-#     """
-#
-#     queryset = Like.objects.all()
-#     serializer_class = LikeForPostSerializer
-#
-#     def create(self, request, *args, **kwargs):
-#         user = self.request.user
-#         post = get_object_or_404(Post, id=self.kwargs.get('post_id'))
-#         like = Like(user=user, post=post)
-#         like.save()
-#         return Response(status=status.HTTP_201_CREATED)
-
-    # def perform_create(self, serializer):
-    #     post = get_object_or_404(Post, id=self.kwargs.get('post_id'))
-    #     serializer.save(user=self.request.user, post=post)
-
-
-# class UnlikePost(DestroyAPIView, GenericAPIView):
-#     """
-#     DELETE: remove like from a post
-#     """
-#     #permission_classes = (IsAuthenticated & IsOwnerOrReadOnly,)
-#
-#     queryset = Like.objects.all()
-#     serializer_class = LikeForPostSerializer
-#
-#     def delete(self, request, *args, **kwargs):
-#         post = self.kwargs["post_id"]
-#         user = self.request.user.id
-#         Like.objects.get(post=post, user=user).delete()
-#         return Response("delete successful")
-
-
-    # def perform_destroy(self, instance):
-    #     post = self.kwargs.get('post_id')
-    #     instance.delete(post=post, user=self.request.user)
-
-
-# class SearchPosts(ListAPIView):
-#     """
-#     GET: Search posts of all users and list result in chronological order
-#     """
-#     queryset = Post.objects.all()
-#     serializer_class = PostSerializer
-#
-#     def get_queryset(self):
-#         return self.queryset.filter(content=self.kwargs.get('search_string'))
 
 
 class SearchPosts(ListAPIView):
