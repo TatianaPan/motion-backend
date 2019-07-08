@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from app.feed.models import Post, Like
-from users.serializers import UserSerializer
+from app.users.serializers import UserSerializer
 
 User = get_user_model()
 

@@ -25,7 +25,13 @@ RUN mkdir -p /backend
 COPY ./backend/requirements.yml /backend/requirements.yml
 RUN /opt/conda/bin/conda env create -f /backend/requirements.yml
 ENV PATH /opt/conda/envs/django_motion/bin:$PATH
+RUN echo "source activate app" >~/.bashrc
 
 COPY ./backend /backend
+
+
+COPY ./backend/scripts/* /backend/scripts/
+
+RUN chmod +x /backend/scripts/*
 
 WORKDIR /backend

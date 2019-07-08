@@ -18,6 +18,7 @@ urlpatterns = [
     path('friendrequests/reject/<int:request_id>/', RejectFriendRequest.as_view()),
     path('friends/', ListAcceptedFriends.as_view()),
     path('friends/unfriend/<int:user_id>/', UnfriendUser.as_view()),
-    path('registration/', RegistrationView.as_view())
+    path('registration/', RegistrationView.as_view()),
+    path('registration/validation/', RegistrationValidationView.as_view())
 
 ]
