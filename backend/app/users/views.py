@@ -1,13 +1,13 @@
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render
-from rest_framework.filters import SearchFilter
-from rest_framework import request, filters
+# from django.shortcuts import render
+# from rest_framework.filters import SearchFilter
+# from rest_framework import request, filters
 from rest_framework.generics import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import generics, filters, status
+from rest_framework import filters, status
 from django.contrib.auth.hashers import make_password
 
 from app.users.models import UserProfile, Follower, Friend
@@ -162,7 +162,7 @@ class GetUpdateProfile(RetrieveUpdateAPIView):
     def partial_update(self, request, *args, **kwargs):
         self.kwargs['pk'] = self.request.user
         # user = self.request.user
-        #me = user.profile
+        # me = user.profile
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
 
@@ -360,7 +360,8 @@ class RegistrationValidationView(GenericAPIView):
         # user = User(email=email, username=username, password=password)
         # user.save()
         # #
-        # if email == User.objects.get(email=request.data) and validation == UserProfile.objects.get(validation=validation):
+        # if email == User.objects.get(email=request.data)
+        # and validation == UserProfile.objects.get(validation=validation):
         #     user = serializer.save(username=username, password=password)
         #
         # else:
@@ -380,4 +381,3 @@ class RegistrationValidationView(GenericAPIView):
 
         # try:
         #     validation_code = UserProfile.objects.get(user__id__)
-

@@ -35,4 +35,3 @@ class LikeForPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = '__all__'
-

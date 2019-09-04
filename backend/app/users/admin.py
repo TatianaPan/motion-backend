@@ -7,4 +7,3 @@ from app.users.models import *
 admin.site.register(UserProfile)
 admin.site.register(Follower)
 admin.site.register(Friend)
-

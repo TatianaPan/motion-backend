@@ -1,24 +1,23 @@
 from django.core.mail import send_mail
 from django.db.models import Q
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse, HttpResponse
-from django.views import View
-import json
+# from django.http import JsonResponse, HttpResponse
+# from django.views import View
+# import json
 
-from rest_framework.filters import SearchFilter
+# from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework import request, generics, filters, status
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, DestroyAPIView, \
-    GenericAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 
 from app.feed.models import Post, Like
 from app.feed.serializers import PostSerializer, PostForPostingSerializer, LikeSerializer, LikeForPostSerializer
 from app.feed.permissions import IsOwnerOrReadOnly
-from app.users.models import Follower, Friend
+# from app.users.models import Follower, Friend
 
 User = get_user_model()
 
@@ -138,5 +137,3 @@ class SearchPosts(ListAPIView):
 
 class ShareAPost(CreateAPIView):
     pass
-
-
