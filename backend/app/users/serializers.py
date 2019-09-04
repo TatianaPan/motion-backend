@@ -33,7 +33,6 @@ class FullUserSerializer(WritableNestedModelSerializer):
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'profile']
 
-
     # def update(self, instance, validated_data):
     #     user_data = validated_data.pop('user')
     #     # Unless the application properly enforces that this field is
@@ -55,6 +54,7 @@ class FullUserSerializer(WritableNestedModelSerializer):
     #     profile.save()
     #
     #     return instance
+
 
 class FollowSerializer(serializers.ModelSerializer):
     follower = UserSerializer()
@@ -81,7 +81,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class RegistrationValidationSerializer(serializers.ModelSerializer):
-    #profile = UserProfileSerializer()
+    # profile = UserProfileSerializer()
 
     class Meta:
         model = User
